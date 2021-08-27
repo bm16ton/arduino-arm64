@@ -1,0 +1,8 @@
+site_name: BLE HID
+
+docs_dir: doc/
+
+pages:
+- ['index.md', 'Home']
+- ['HID.md', 'Introduction to USB HID']
+- ['HIDService.md', 'Using the HID service on mbed']

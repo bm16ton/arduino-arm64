@@ -1,0 +1,262 @@
+#!/bin/bash
+
+cmd_name="$0"
+cmd_dir="`dirname -- "$cmd_name"`"
+
+usage()
+{
+    if [ -z $DEVICE_NAME ] ; then
+        DEVICE_NAME="DFU Device"
+    fi
+    if [ -n "$SCRIPT_NAME" ] ; then
+        SCRIPT_NAME="$cmd_name"
+        cat <<EOF
+usage: $SCRIPT_NAME options
+
+This script boots a $DEVICE_NAME
+
+Options:
+EOF
+    else
+        cat <<EOF
+usage: $SCRIPT_NAME options
+
+This script boots a $DEVICE_NAME
+
+Options:
+        -n device_name          : name of device to be booted
+        -v vendor_id            : in hex as 0x1234 or 1234
+        -p product_id           : in hex as 0x5678 or 5678
+        -i image                : filename of image to boot
+        [ -s script_name ]      : name of script
+EOF
+    fi
+    cat <<EOF
+        [ -h ]                  : Show this message 
+        [ -l ]                  : display the dfu-util log file
+        [ -d ]                  : run dfu-util in debug/verbose mode
+        [ -t ]                  : test. Display the command only
+
+Environment variables:
+        CMD_DFU_UTIL            : alternate dfu-util utility
+EOF
+}
+
+CMD_SUDO=
+# if you need to set the above you may not have installed the udev rules
+SCRIPT_HOME="$( cd "$( dirname "$0" )" && pwd )"
+LOGGING=false
+# LOGGING=true
+TEST=0
+
+DFU_UTIL="dfu-util"
+if [ ! -z "$CMD_DFU_UTIL" ]; then
+    # set by external environment variable
+    DFU_UTIL="$CMD_DFU_UTIL"
+elif [ -x "$cmd_dir/dfu-util" ]; then
+    # prefer the dfu-util in the same script directory:
+    DFU_UTIL="$cmd_dir/dfu-util"
+fi
+
+DFU_UTIL_OUTPUT="`mktemp -t dfu$$XXX`"
+
+terminate() {
+    if [ -e "$DFU_UTIL_OUTPUT" ] ; then
+        rm "$DFU_UTIL_OUTPUT"
+    fi
+    exit $1
+}
+
+
+SCRIPT_NAME=
+DEVICE_NAME=
+DEVICE_VID_PID=  # VID:PID or just VID
+DEVICE_VID=      # will be extracted from DEVICE_VID_PID
+DEVICE_PID=      # DEVICE_VID_PID is just VID if this is used
+DEVICE_IMAGE=
+cmd_dfu_util_opts=
+
+optspec="hltdn:v:p:i:s:"
+while getopts "$optspec" OPTION
+do
+    case $OPTION in
+        s)
+                SCRIPT_NAME=${OPTARG}
+                ;;
+        n)
+                DEVICE_NAME=${OPTARG}
+                ;;
+        v)
+                DEVICE_VID_PID=${OPTARG}
+                ;;
+        p)
+                DEVICE_PID=${OPTARG}
+                ;;
+        i)        
+                DEVICE_IMAGE=${OPTARG}
+                ;;
+        h)
+                usage
+                terminate 0
+                ;;
+        l)
+                LOGGING=true
+                ;;
+        t)
+                TEST=1
+                ;;
+        d)
+                cmd_dfu_util_opts=-v
+                ;;
+        ?)
+                usage
+                terminate 0
+                ;;
+    esac        
+done
+
+if ! type "$DFU_UTIL" >/dev/null &>/dev/null; then
+    echo "Can't find executable '$DFU_UTIL' (set \$CMD_DFU_UTIL?)" >&2
+    terminate 1
+fi
+
+dfu_ver= # find out which DFU version this is
+{  declare -a verwords
+   verwords=($("$DFU_UTIL" --version | grep ^dfu-util | tail -1))
+   #echo "Got words ‘${verwords[*]}’ from $DFU_UTIL —-version"
+   dfu_ver=${verwords[${#verwords[*]}-1]}
+}
+$LOGGING && echo "Using dfu-util version $dfu_ver at `which $DFU_UTIL`"
+
+# establish what kind of prefix VID:PIDs have when listed in -l
+vp_hex=
+[ "${dfu_ver::3}" = "0.1" ] && vp_hex="0x"
+# echo "DFU version $dfu_ver means we should use hex prefix '$vp_hex'"
+
+if [ "_$DEVICE_VID_PID" != "_${DEVICE_VID_PID/:}" ]; then
+    # we have specified VID and PID in this argument
+    DEVICE_PID="${DEVICE_VID_PID//*:}"
+    DEVICE_VID="${DEVICE_VID_PID/:*}"
+else
+    # we expect the PID to be provided separately
+    DEVICE_VID="$DEVICE_VID_PID"
+fi
+
+if [ -z "$DEVICE_NAME" ] ; then
+    echo "device name not specified (e.g. with -n)" >&2
+    usage >&2
+    terminate 1
+fi
+if [ -z "$DEVICE_IMAGE" ] ; then
+    echo "device image not specified (e.g. with -i)" >&2
+    usage >&2
+    terminate 1
+fi
+if [ -z "$DEVICE_VID" ] ; then
+    echo "device USB Vendor ID not specified (e.g. with -v)" >&2
+    usage >&2
+    terminate 1
+fi
+if [ -z "$DEVICE_PID" ] ; then
+    echo "device USB Part ID not specified (e.g. with -p)" >&2
+    usage >&2
+    terminate 1
+fi
+DEVICE_VID="${DEVICE_VID/0x}"
+DEVICE_PID="${DEVICE_PID/0x}"
+DEVICE_VID_PID="${vp_hex}$DEVICE_VID:${vp_hex}$DEVICE_PID"
+#DEVICE_VID_PID="\(0x\|\)$DEVICE_VID:\(0x\|\)$DEVICE_PID"
+
+echo "Looking for DFU devices with VID $DEVICE_VID PID $DEVICE_PID ..."
+$CMD_SUDO "$DFU_UTIL" -l > "$DFU_UTIL_OUTPUT"
+count=`cat "$DFU_UTIL_OUTPUT" | grep -i $DEVICE_VID_PID | wc -l | tr -d ' '`
+device_line=`cat $DFU_UTIL_OUTPUT | grep -i $DEVICE_VID_PID`
+# echo "$device_line"
+if [ $count -ne 1 ] ; then
+    if [ $count -eq 0 ] ; then
+        echo "No bootable $DEVICE_NAME found" >&2
+        echo "$DFU_UTIL -l output:"
+        cat "$DFU_UTIL_OUTPUT" >&2
+        echo "(Grepping for $DEVICE_VID_PID)" >&2
+        terminate 1
+    fi
+    if [ $count -gt 1 ] ; then
+        echo "$count bootable $DEVICE_NAME found. Can only boot one at a time" >&2
+        terminate $count
+    fi
+fi
+
+cfg=
+intf=
+set -- $device_line
+while [ $# -gt 0 ]; do
+    case "$1" in
+        cfg=*)  cfg=${1/cfg=}; cfg=${cfg//,};;
+        intf=*) intf=${1/intf=}; intf=${intf//,};;
+    esac
+    shift
+done
+
+$LOGGING && echo "Found DFU device with CFG $cfg INTF $intf ..."
+$LOGGING && echo "(from: $device_line)"
+
+exitval=0
+if [ -z "$cfg" ]; then
+    echo "No configuration number (cfg=) in $DFU_UTIL listing - $device_line">&2
+    exitval=2
+elif [ -z "$intf" ]; then
+    echo "No interface number (intf=) in $DFU_UTIL listing - $device_line">&2
+    exitval=3
+else
+    boot_options="-d $DEVICE_VID_PID -c $cfg -i $intf -t 2048 -R $cmd_dfu_util_opts"
+
+    echo "`basename -- "$DFU_UTIL"` $boot_options -D "$DEVICE_IMAGE""
+
+    if [ $TEST -eq 0 ] ; then 
+        $CMD_SUDO "$DFU_UTIL" $boot_options -D "$DEVICE_IMAGE" >"$DFU_UTIL_OUTPUT" 2>&1
+        dfu_exit_code=$?
+        if [ $dfu_exit_code -eq 0 ] ; then
+            # dfu-util 0.9 sometimes fails to download but then reports a zero
+            # return code
+            dlerror="`grep "dfu-util: Error during download" "$DFU_UTIL_OUTPUT"`"
+            if [ -n "$dlerror" ]; then
+                echo "$dlerror"
+                echo "(ignoring successful dfu-util code $dfu_exit_code after failed operation)"
+                dfu_exit_code=3
+            fi
+        elif [ $dfu_exit_code -eq 1 ] ; then
+            # always returns 1! search for finished in the output
+            finished="`grep finished "$DFU_UTIL_OUTPUT"`"
+            if [ -n "$finished" ]; then
+                echo "(ignoring exit dfu-util code $dfu_exit_code after successful operation)" >&2
+                dfu_exit_code=0
+            fi
+        elif [ $dfu_exit_code -eq 74 ] ; then
+            # dfu-util 0.9 returns 74 (I/O error) after successful operation
+            # but may signal a failure to detach from the USB device.  Once
+            # the utility reports "Done!" we don't really care about that
+            # failure.
+            finished1="`grep "Download done." "$DFU_UTIL_OUTPUT"`"
+            finished2="`grep "Done!" "$DFU_UTIL_OUTPUT"`"
+            if [ -n "$finished1" -o -n "$finished2" ]; then
+                echo "(ignoring exit dfu-util code $dfu_exit_code after successful operation)" >&2
+                dfu_exit_code=0
+            else
+                grep "Error" "$DFU_UTIL_OUTPUT" >&2
+                grep "More than one" "$DFU_UTIL_OUTPUT" >&2
+            fi
+        fi
+        if $LOGGING; then
+            echo;echo "This was the output from $DFU_UTIL";echo
+            cat "$DFU_UTIL_OUTPUT"
+        fi
+        exitval=$dfu_exit_code
+        if [ $dfu_exit_code -ne 0 ] ; then
+            echo "dfu-util failed with exit code: $dfu_exit_code" >&2
+        else
+            echo "Booted $DEVICE_NAME ($DEVICE_VID_PID) with $DEVICE_IMAGE"
+        fi
+    fi
+fi
+
+exit $exitval

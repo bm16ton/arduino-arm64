@@ -1,0 +1,4 @@
+commit e32ba63ffc6131431811a5b6a88764e09ee2fd27
+Author: Frederic Pillon <frederic.pillon@st.com>
+
+    Update to release 2.0.0 version

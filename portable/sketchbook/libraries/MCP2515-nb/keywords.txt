@@ -1,0 +1,134 @@
+#######################################
+# Syntax Coloring Map For CAN
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MCP2515								KEYWORD1
+CANPacket							KEYWORD1
+MCP2515_ERRORCODES					KEYWORD1
+MCP2515_CAN_CLOCK					KEYWORD1
+MCP2515_CAN_SPEED					KEYWORD1
+MCP2515_CAN_MASK                    KEYWORD1
+MCP2515_CAN_RXF                     KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+## MCP2515
+
+begin								KEYWORD2
+end									KEYWORD2
+
+setPins								KEYWORD2
+setSPIFrequency						KEYWORD2
+setClockFrequency					KEYWORD2
+
+filter								KEYWORD2
+filterExtended						KEYWORD2
+multiFilter							KEYWORD2
+
+setConfigMode						KEYWORD2
+setListenMode						KEYWORD2
+setLoopbackMode						KEYWORD2
+setSleepMode						KEYWORD2
+setNormalMode						KEYWORD2
+
+setWakeupFilter						KEYWORD2
+
+receivePacket						KEYWORD2
+onReceivePacket						KEYWORD2
+
+getTxQueueLength					KEYWORD2
+processTxQueue						KEYWORD2
+
+writePacket							KEYWORD2
+abortPacket							KEYWORD2
+waitForPacketStatus					KEYWORD2
+
+## CANPacket
+
+isValid								KEYWORD2
+isExtended							KEYWORD2
+getStatus							KEYWORD2
+
+getId								KEYWORD2
+getDlc								KEYWORD2
+getRtr								KEYWORD2
+getData								KEYWORD2
+
+startStandard						KEYWORD2
+startExtended						KEYWORD2
+
+writeData							KEYWORD2
+writeData							KEYWORD2
+
+end									KEYWORD2
+
+## CANPacket constants
+
+STATUS_RX_OK						KEYWORD2
+STATUS_RX_INVALID_MESSAGE			KEYWORD2
+
+STATUS_TX_PENDING					KEYWORD2
+STATUS_TX_WRITTEN					KEYWORD2
+STATUS_TX_SENT						KEYWORD2
+
+STATUS_TX_ABORT_REQUESTED			KEYWORD2
+STATUS_TX_ABORTED					KEYWORD2
+
+STATUS_TX_ERROR						KEYWORD2
+
+## MCP2515_ERRORCODES constants
+
+OK									KEYWORD2
+PERM								KEYWORD2
+ENOENT								KEYWORD2
+INTR								KEYWORD2
+BADF								KEYWORD2
+AGAIN								KEYWORD2
+BUSY								KEYWORD2
+INVAL								KEYWORD2
+COMM								KEYWORD2
+OVERFLOW							KEYWORD2
+
+## CAN_CLOCK constants
+
+MCP_8MHZ							KEYWORD2
+MCP_16MHZ							KEYWORD2
+
+## CAN_SPEED constants
+
+CAN_5KBPS							KEYWORD2
+CAN_10KBPS							KEYWORD2
+CAN_20KBPS							KEYWORD2
+CAN_40KBPS							KEYWORD2
+CAN_50KBPS							KEYWORD2
+CAN_80KBPS							KEYWORD2
+CAN_100KBPS							KEYWORD2
+CAN_125KBPS							KEYWORD2
+CAN_200KBPS							KEYWORD2
+CAN_250KBPS							KEYWORD2
+CAN_500KBPS							KEYWORD2
+CAN_1000KBPS						KEYWORD2
+
+# MCP2515_CAN_MASK constants
+MASK0					        	KEYWORD2
+MASK1					        	KEYWORD2
+
+# MCP2515_CAN_RXF constants
+RXF0					        	KEYWORD2
+RXF1					        	KEYWORD2
+RxF2					        	KEYWORD2
+RxF3					        	KEYWORD2
+RxF4					        	KEYWORD2
+RxF5					        	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+MCP2515_CANPACKET_TX_QUEUE_SIZE		LITERAL1

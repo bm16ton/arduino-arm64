@@ -1,0 +1,62 @@
+#ifndef Uart_h
+#define Uart_h
+
+#include <inttypes.h>
+
+#include "Stream.h"
+
+#define SERIAL_5N1	(UART_LCR_WLEN5 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_1BIT)
+#define SERIAL_6N1	(UART_LCR_WLEN6 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_1BIT)
+#define SERIAL_7N1	(UART_LCR_WLEN7 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_1BIT)
+#define SERIAL_8N1	(UART_LCR_WLEN8 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_1BIT)
+#define SERIAL_5N2	(UART_LCR_WLEN5 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_2BIT)
+#define SERIAL_6N2	(UART_LCR_WLEN6 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_2BIT)
+#define SERIAL_7N2	(UART_LCR_WLEN7 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_2BIT)
+#define SERIAL_8N2	(UART_LCR_WLEN8 | UART_LCR_PARITY_DIS  | UART_LCR_SBS_2BIT)
+#define SERIAL_5E1	(UART_LCR_WLEN5 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_1BIT)
+#define SERIAL_6E1	(UART_LCR_WLEN6 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_1BIT)
+#define SERIAL_7E1	(UART_LCR_WLEN7 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_1BIT)
+#define SERIAL_8E1	(UART_LCR_WLEN8 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_1BIT)
+#define SERIAL_5E2	(UART_LCR_WLEN5 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_2BIT)
+#define SERIAL_6E2	(UART_LCR_WLEN6 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_2BIT)
+#define SERIAL_7E2	(UART_LCR_WLEN7 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_2BIT)
+#define SERIAL_8E2	(UART_LCR_WLEN8 | UART_LCR_PARITY_EVEN | UART_LCR_SBS_2BIT)
+#define SERIAL_5O1	(UART_LCR_WLEN5 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_1BIT)
+#define SERIAL_6O1	(UART_LCR_WLEN6 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_1BIT)
+#define SERIAL_7O1	(UART_LCR_WLEN7 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_1BIT)
+#define SERIAL_8O1	(UART_LCR_WLEN8 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_1BIT)
+#define SERIAL_5O2	(UART_LCR_WLEN5 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_2BIT)
+#define SERIAL_6O2	(UART_LCR_WLEN6 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_2BIT)
+#define SERIAL_7O2	(UART_LCR_WLEN7 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_2BIT)
+#define SERIAL_8O2	(UART_LCR_WLEN8 | UART_LCR_PARITY_ODD  | UART_LCR_SBS_2BIT)
+
+#define LEN_BUF 32
+
+class Uart : public Stream {
+public:
+	friend void UART_IRQHandler(Uart*);
+	Uart(LPC_USART_T *p, IRQn_Type irq);
+	virtual void begin(unsigned baudrate, unsigned config = SERIAL_8N1);
+	virtual void end();
+	virtual int available(void);
+	virtual int peek(void);
+	virtual int read(void);
+	virtual void flush(void);
+	virtual size_t write(uint8_t);
+	operator bool() { return true; }
+private:
+	LPC_USART_T *pUart;
+	IRQn_Type irqNo;
+	uint8_t rxData[LEN_BUF];
+	RINGBUFF_T rxRingBuf;
+};
+
+#define Serial Serial0
+extern Uart Serial0;
+extern Uart Serial1;
+extern Uart Serial2;
+extern Uart Serial3;
+
+extern void serialEventRun(void) __attribute__((weak));
+
+#endif

@@ -1,0 +1,16 @@
+SerialConfigCommand	KEYWORD1
+set			KEYWORD2
+reset			KEYWORD2
+enable			KEYWORD2
+disable			KEYWORD2
+update			KEYWORD2
+setInterval		KEYWORD2
+getCmd			KEYWORD2
+getCmdS			KEYWORD2
+getValue		KEYWORD2
+getValueS		KEYWORD2
+getValueInt		KEYWORD2
+getValueFloat		KEYWORD2
+hasValue		KEYWORD2
+readSetting		KEYWORD2
+

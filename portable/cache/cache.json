@@ -1,0 +1,81 @@
+{
+  "files" : [ {
+    "remoteURL" : "https://arduino.esp8266.com/stable/package_esp8266com_index.json",
+    "localPath" : "/home/maddocks/arduino-1.8.13-good/portable/cache/arduino.esp8266.com/stable/package_esp8266com_index.json",
+    "eTag" : "60ff395b-26f64",
+    "md5" : "MD5:90644b3a0b909421d918f72290494272",
+    "createdAt" : "2021-08-26T15:21:23.931217398",
+    "cacheControl" : {
+      "maxAge" : 600,
+      "mustRevalidate" : false,
+      "noCache" : false,
+      "noStore" : false
+    },
+    "expires" : "2021-08-26T15:31:23.931217398"
+  }, {
+    "remoteURL" : "https://downloads.arduino.cc/libraries/library_index.json.gz",
+    "localPath" : "/home/maddocks/arduino-1.8.13-good/portable/cache/downloads.arduino.cc/libraries/library_index.json.gz",
+    "eTag" : "2bcd21cfd377237e20c6ee60e8370de2",
+    "md5" : "MD5:2bcd21cfd377237e20c6ee60e8370de2",
+    "createdAt" : "2021-08-27T14:24:19.279448488",
+    "cacheControl" : {
+      "maxAge" : 14400,
+      "mustRevalidate" : false,
+      "noCache" : false,
+      "noStore" : false
+    },
+    "expires" : "2021-08-27T18:24:19.279448488"
+  }, {
+    "remoteURL" : "https://downloads.arduino.cc/libraries/library_index.json.sig",
+    "localPath" : "/home/maddocks/arduino-1.8.13-good/portable/cache/downloads.arduino.cc/libraries/library_index.json.sig",
+    "eTag" : "85e09b195f165e064b78fb3f1afff6e6",
+    "md5" : "MD5:85e09b195f165e064b78fb3f1afff6e6",
+    "createdAt" : "2021-08-27T14:24:19.752175513",
+    "cacheControl" : {
+      "maxAge" : 14400,
+      "mustRevalidate" : false,
+      "noCache" : false,
+      "noStore" : false
+    },
+    "expires" : "2021-08-27T18:24:19.752175513"
+  }, {
+    "remoteURL" : "https://downloads.arduino.cc/packages/package_index.json.sig",
+    "localPath" : "/home/maddocks/arduino-1.8.13-good/portable/cache/downloads.arduino.cc/packages/package_index.json.sig",
+    "eTag" : "77ff56a8041a09f0ecec9c770e39c1ed",
+    "md5" : "MD5:77ff56a8041a09f0ecec9c770e39c1ed",
+    "createdAt" : "2021-08-26T15:21:24.856431031",
+    "cacheControl" : {
+      "maxAge" : 3600,
+      "mustRevalidate" : false,
+      "noCache" : false,
+      "noStore" : false
+    },
+    "expires" : "2021-08-26T16:21:24.856431031"
+  }, {
+    "remoteURL" : "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "localPath" : "/home/maddocks/arduino-1.8.13-good/portable/cache/raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "eTag" : "62b070bd851919e6362e2c88a6444084ea652e50eed544355e3d702e108aa245",
+    "md5" : "MD5:a93dbfbdcac9cf27814151fb173ef2fe",
+    "createdAt" : "2021-08-26T15:21:24.302633627",
+    "cacheControl" : {
+      "maxAge" : 300,
+      "mustRevalidate" : false,
+      "noCache" : false,
+      "noStore" : false
+    },
+    "expires" : "2021-08-26T15:26:24.302633627"
+  }, {
+    "remoteURL" : "https://downloads.arduino.cc/packages/package_index.json",
+    "localPath" : "/home/maddocks/arduino-1.8.13-good/portable/cache/downloads.arduino.cc/packages/package_index.json",
+    "eTag" : "de9d4dcfb4943301584de693af84e8bf",
+    "md5" : "MD5:de9d4dcfb4943301584de693af84e8bf",
+    "createdAt" : "2021-08-26T15:21:24.685788664",
+    "cacheControl" : {
+      "maxAge" : 3600,
+      "mustRevalidate" : false,
+      "noCache" : false,
+      "noStore" : false
+    },
+    "expires" : "2021-08-26T16:21:24.685788664"
+  } ]
+}
